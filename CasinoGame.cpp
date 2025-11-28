@@ -159,9 +159,9 @@ double highLowGame(double balance) {
 }
 
 double rps(double balance) {
-    bool cont = true;
+    char cont = 'Y';
     std::cout << "Welcome to Rock-Paper-Scissors!!\n";
-    while(cont) {
+    while(cont == 'Y') {
         double betAmount;
         std::cout << "Please enter your bet amount: ";
         std::cin >> betAmount;
@@ -226,10 +226,9 @@ double rps(double balance) {
 
         std::cout << "I chose " << compChoice << ". You chose " << choice << ".\n";
         if(res == "tied") {
-            std::cout << "We tied!! Your bet has been returned but we must play another round!\n";
+            std::cout << "We tied!! Your bet has been returned!\n";
             balance += betAmount;
             showBalance(balance);
-            continue;
         } else if (res == "won") {
             std::cout << "You won!!\n";
             balance += betAmount * 2;
@@ -248,7 +247,7 @@ double rps(double balance) {
             std::cin >> ans;
         }
 
-        cont = ans == 'Y' ? true : false;
+        cont = ans;
 
     }
 
