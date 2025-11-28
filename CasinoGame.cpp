@@ -1,12 +1,17 @@
 #include <iostream>
 #include <iomanip>
 #include <random>
+#include <cctype>
 
 void showBalance(double balance);
 double depositMoney();
 double withdrawMoney(double balance);
 double highLowGame(double balance);
 double rps(double balance);
+bool askContinue();
+std::random_device rd;
+std::mt19937 gen(rd());
+
 
 int main() {
 
@@ -72,6 +77,17 @@ int main() {
     std::cout << "*************************************" << '\n';
 }
 
+double validateBet(double balance) {
+    double amount;
+    std::cout << "Enter your bet amount: ";
+    std::cin >> amount;
+    while (amount <= 0 || amount > balance) {
+            std::cout << "Please enter a valid bet amount(more than 0 and less than your balance: " << balance << ")";
+            std::cin >> amount;
+    }
+    return amount;
+}
+
 void showBalance(double balance) {
     std::cout << "\nYour current balance is: $" << balance << '\n';
 }
@@ -106,21 +122,12 @@ double withdrawMoney(double balance) {
 
 double highLowGame(double balance) {
     std::cout << "Welcome to the High-Low game!!\n";
-    char cont = 'Y';
-    while(cont == 'Y') {
-        double betAmount;
-        std::cout << "Please enter your bet amount: ";
-        std::cin >> betAmount;
-
-        while (betAmount <= 0 || betAmount > balance) {
-            std::cout << "Please enter a valid bet amount(more than 0 and less than your balance: " << balance << ")";
-            std::cin >> betAmount;
-        }
+    bool cont = true;
+    while(cont) {
+        double betAmount = validateBet(balance);
 
         balance -= betAmount;
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
         std::uniform_int_distribution<> dist(1, 100);
         int num = dist(gen);
 
@@ -129,10 +136,12 @@ double highLowGame(double balance) {
         std::cout << "You must now guess which half of the set it resides in: High(51-100) as H or Low(1-50) as L" << '\n';
         std::cin >> guess;
 
-        while(guess != 'H' && guess != 'h' && guess != 'L' && guess != 'l') {
+         do {
             std::cout << "Please enter a valid guess H(high) or L(low): ";
             std::cin >> guess;
-        }
+            guess = std::toupper(guess);
+        }while(guess != 'H'  && guess != 'L');
+            
 
         guess = (guess == 'H' || guess == 'h')  ? 'h' : 'l';
 
@@ -145,12 +154,7 @@ double highLowGame(double balance) {
         showBalance(balance);
   
 
-        std::cout << "Would you like to play again? Y/N: ";
-        std::cin >> cont;
-        while(cont != 'Y' && cont != 'N') {
-            std::cout << "Please enter Y or N for yes or no. \n";
-            std::cin >> cont;
-        }
+        cont = askContinue();
 
     }
     std::cout << "Thank you for playing!\n";
@@ -159,21 +163,14 @@ double highLowGame(double balance) {
 }
 
 double rps(double balance) {
-    char cont = 'Y';
+    bool cont = true;
     std::cout << "Welcome to Rock-Paper-Scissors!!\n";
-    while(cont == 'Y') {
-        double betAmount;
-        std::cout << "Please enter your bet amount: ";
-        std::cin >> betAmount;
-        while(betAmount <= 0 || betAmount > balance) {
-            std::cout << "Please enter a valid bet amount(between 0 and your balance of " << balance << "): ";
-            std::cin >> betAmount;
-        }
+    while(cont) {
+        
+        double betAmount = validateBet(balance);
 
         balance -= betAmount;
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
         std::uniform_int_distribution<> dist(1, 3);
         int num = dist(gen);
 
@@ -238,20 +235,24 @@ double rps(double balance) {
         
         if(balance <= 0) return balance;
         showBalance(balance);
-        char ans;
-        std::cout << "Would you like to play again? Y/N: ";
-        std::cin >> ans;
-
-        while(ans != 'Y' && ans != 'N') {
-            std::cout << "Would you like to play again? Y/N(Please enter valid input): ";
-            std::cin >> ans;
-        }
-
-        cont = ans;
+        
+        cont = askContinue();
 
     }
 
     std::cout << "Thank you for playing Rock-Paper-Scissors";
 
     return balance;
+}
+
+bool askContinue() {
+    char ans;
+    do {
+        std::cout << "Would you like to play again? Y/N(Please enter valid input): ";
+        std::cin >> ans;
+        ans = std::toupper(ans);
+    }while(ans != 'Y' && ans != 'N');
+
+    return ans == 'Y';
+
 }
